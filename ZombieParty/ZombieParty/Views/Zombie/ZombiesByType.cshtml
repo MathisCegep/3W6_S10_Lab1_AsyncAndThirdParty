@@ -7,23 +7,35 @@
         </div>
     </div>
 
-    @foreach (var zombieType in Model)
-    {
-        <div class="row">
-            <h3>@zombieType.TypeName</h3>
-            @foreach (var zombie in zombieType.Zombies)
-            {
-                <div href="#" class="card  border m-3 text-center bg-warning" style="width: 20rem; background-image: url('/images/imagesLayout/Fond.png'); ">
-                    <div class="card-body  text-warning">
-                        <h3 class="card-title"> @zombie.Name </h3>
-                        <h5> Points: @zombie.Point </h5>
+    <div class="accordion" id="zombieAccordion">
+        @foreach (var zombieType in Model)
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@("#Id" + zombieType.Id)" aria-expanded="false" aria-controls="@zombieType.TypeName">
+                        @zombieType.TypeName
+                    </button>
+                </h2>
+                <div id="@("Id" + zombieType.Id)" class="accordion-collapse collapse" data-bs-parent="#zombieAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            @foreach (var zombie in zombieType.Zombies)
+                            {
+                                <div href="#" class="card  border m-3 text-center bg-warning" style="width: 20rem; background-image: url('/images/imagesLayout/Fond.png'); ">
+                                    <div class="card-body  text-warning">
+                                        <h3 class="card-title"> @zombie.Name </h3>
+                                        <h5> Points: @zombie.Point </h5>
+                                    </div>
+                                </div>
+                            }
+                            @if (zombieType.Zombies.Count == 0)
+                            {
+                                <span class="text-danger">Aucun Zombie pour ce type</span>
+                            }
+                        </div>
                     </div>
                 </div>
-            }
-            @if (zombieType.Zombies.Count == 0)
-            {
-                <span class="text-danger">Aucun Zombie pour ce type</span>
-            }
-        </div>
-    }
+            </div>
+        }
+    </div>
 </div>

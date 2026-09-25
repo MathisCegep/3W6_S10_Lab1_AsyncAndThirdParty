@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using ZombieParty.Models;
 using ZombieParty.Models.Data;
 using ZombieParty.ViewModels;
@@ -15,14 +16,14 @@ namespace ZombieParty.Controllers
             _baseDonnees = baseDonnees;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<ZombieType> zombieTypesList = _baseDonnees.ZombieTypes.ToList();
+            var zombieTypesList = await _baseDonnees.ZombieTypes.ToListAsync();
 
             return View(zombieTypesList);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             var zombies = _baseDonnees.Zombies.Where(z => z.ZombieTypeId == id);
 
@@ -34,7 +35,7 @@ namespace ZombieParty.Controllers
                 PointsAverage = zombies.Average(p => p.Point)
             };
 
-            zombieTypeVM.ZombieType = _baseDonnees.ZombieTypes.FirstOrDefault(zt => zt.Id == id);
+            zombieTypeVM.ZombieType = await _baseDonnees.ZombieTypes.FirstOrDefaultAsync(zt => zt.Id == id);
             return View(zombieTypeVM);
         }
 
@@ -48,13 +49,13 @@ namespace ZombieParty.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ZombieType zombieType)
+        public async Task<IActionResult> Create(ZombieType zombieType)
         {
             if (ModelState.IsValid)
             {
                 // Ajouter à la BD
-                _baseDonnees.ZombieTypes.Add(zombieType);
-                _baseDonnees.SaveChanges();
+                _baseDonnees.ZombieTypes.AddAsync(zombieType);
+                _baseDonnees.SaveChangesAsync();
                 TempData["Success"] = $"{zombieType.TypeName} zombie type added";
                 return this.RedirectToAction("Index");
             }
@@ -62,9 +63,9 @@ namespace ZombieParty.Controllers
             return this.View(zombieType);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            ZombieType zombieType = _baseDonnees.ZombieTypes.Find(id);
+            ZombieType zombieType = await _baseDonnees.ZombieTypes.FindAsync(id);
             
             return View(zombieType);
         }
